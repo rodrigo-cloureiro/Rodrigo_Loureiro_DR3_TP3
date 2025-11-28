@@ -1,0 +1,13 @@
+name: Release deploy
+
+on:
+  release:
+    types: [ published ]
+
+jobs:
+  release-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Mensagem do deploy
+        run: echo "Deploy realizado com sucesso"
