@@ -7,6 +7,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      ACTIONS_STEP_DEBUG: true
     steps:
       - name: Checkout do código
         uses: actions/checkout@v6
@@ -18,10 +20,19 @@ jobs:
           java-version: "21"
 
       - name: Compila o projeto
-        run: mvn -B clean compile
+        run: |
+          echo "::debug::Iniciando compilação"
+          mvn -B clean compile
+          echo "::debug::Compilação concluída com sucesso"
 
       - name: Executa os testes
-        run: mvn -B clean test
+        run: |
+          echo "::debug::Executando testes"
+          mvn -B clean test
+          echo "::debug::Testes executados com sucesso"
 
       - name: Build com maven
-        run: mvn -B clean install
+        run: |
+          echo "::debug::Iniciando build"
+          mvn -B clean install
+          echo "::debug::Build realizado com sucesso"
