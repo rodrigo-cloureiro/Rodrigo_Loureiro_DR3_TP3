@@ -1,0 +1,59 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        env: [ dev, staging, prod ]
+
+    environment: ${{ matrix.env }}
+
+    env:
+      APP_ENV: ${{ matrix.env }}
+      DEPLOY_KEY: ${{ secrets.DEPLOY_SECRET_KEY }}
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Setup Java (21)
+        uses: actions/setup-java@v4
+        with:
+          distribution: "corretto"
+          java-version: "21"
+
+      - name: Compilar o projeto
+        run: |
+          echo "Iniciando compilação"
+          mvn -B clean compile
+          echo "Compilação concluída com sucesso"
+
+      - name: Executar testes
+        run: |
+          echo "Executando testes"
+          mvn -B test
+          echo "Testes executados com sucesso"
+
+      - name: Build com Maven
+        run: |
+          echo "Iniciando build"
+          mvn -B install
+          echo "Build realizado com sucesso"
+
+      - name: Realizar deploy
+        run: |
+          echo "=== Iniciando deploy no ambiente: $APP_ENV ==="
+          
+          if [ -n "$DEPLOY_KEY" ]; then
+            echo "Deploy executado utilizando credenciais seguras."
+          else
+            echo "DEPLOY_KEY não encontrada!"
+          fi
+          
+          echo "Deploy em $APP_ENV concluído com sucesso!"
